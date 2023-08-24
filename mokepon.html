@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title> POKEMON! </title>
+        <script src="./js/pokemon.js" ></script>
+    </head>
+    <body>
+        <H1> SNOOPY 🐶  </H1>
+        <section id="Selecciona tu mascota"> </section> 
+            <h2>Elige a tu mascota: </h2>
+
+        
+            <label for="Hipodoge">hipodoge</label>
+            <input type="radio" id="hipodoge" name="Mascotas"/>
+            
+            <label for="Capipepo">capipepo</label>
+            <input type="radio" id="capipepo" name="Mascotas"/>
+            
+            <label for="Ratigueya">Ratigueya</label> 
+            <input type="radio" id="ratigueya" name="Mascotas"/>
+            
+
+            <button id="boton-mascota"> Seleccionar</button>
+        <section id="Selecciona tu ataque">
+            <h2>Elige a tu ataque: </h2>
+            
+            <p> Tu mascota <span id="mascota-jugador"> </span></span> tiene <span>3</span> vidas</p>
+            <p>La mascota <span id="mascota-enemigo"></span> del enemigo tiene <span>3</span> vidas</p>
+
+            <P>
+                <button id="boton-fuego"> Fuego 🔥 </button>
+                <button id="boton-agua"> Agua 💧  </button>
+                <button id="boton-tierra"> Tierra 🪨  </button>
+            </P>
+        </section>
+        
+        <section id="mensajes">
+            <p>Tu mascota ataco con FUEGO, la mascota del enemigo atacó con TIERRA - GANASTE 🏆 </p>
+        </section>
+        <section id="reiniciar">
+            <button id="boton-reiniciar"> Reiniciar</button>
+        </section>
+        
+      
+    </body>
+</html>
