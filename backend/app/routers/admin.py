@@ -1,10 +1,16 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from ..database import get_db
-from ..models import Match, Standing, Goal
+from ..models import Match, Standing, Goal, Group
 from ..services.tournament import regenerate_fixtures
+from ..services.knockout import generate_knockout_bracket
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+
+
+class SetModeRequest(BaseModel):
+    mode: str  # 'league' or 'knockout'
 
 
 @router.post("/reset-results")
@@ -43,3 +49,24 @@ def regenerate_tournament(db: Session = Depends(get_db)):
     """Delete all matches and regenerate round-robin for current players."""
     message = regenerate_fixtures(db)
     return {"message": message}
+
+
+@router.post("/set-mode")
+def set_mode(body: SetModeRequest, db: Session = Depends(get_db)):
+    """Switch tournament mode between league and knockout, regenerating fixtures."""
+    if body.mode not in ("league", "knockout"):
+        raise HTTPException(status_code=400, detail="mode must be 'league' or 'knockout'")
+
+    group = db.query(Group).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="No group found")
+
+    group.mode = body.mode
+    db.commit()
+
+    if body.mode == "knockout":
+        message = generate_knockout_bracket(db)
+    else:
+        message = regenerate_fixtures(db)
+
+    return {"message": message, "mode": body.mode}

@@ -56,8 +56,22 @@ def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_d
             match.winner_id = match.home_team_id
         elif match.away_score > match.home_score:
             match.winner_id = match.away_team_id
+        elif match.home_penalties is not None and match.away_penalties is not None:
+            if match.home_penalties > match.away_penalties:
+                match.winner_id = match.home_team_id
+            else:
+                match.winner_id = match.away_team_id
         else:
-            match.winner_id = None  # Draw
+            match.winner_id = None  # Draw, no winner yet
+
+    # Auto-advance winner to next bracket match
+    if match.status == "completed" and match.winner_id and match.next_match_id:
+        next_match = db.query(Match).filter(Match.id == match.next_match_id).first()
+        if next_match:
+            if match.next_match_home:
+                next_match.home_team_id = match.winner_id
+            else:
+                next_match.away_team_id = match.winner_id
 
     db.commit()
     db.refresh(match)

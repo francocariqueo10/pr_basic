@@ -21,6 +21,7 @@ def get_all_groups(db: Session = Depends(get_db)):
         result.append({
             "id": group.id,
             "name": group.name,
+            "mode": group.mode,
             "standings": [StandingResponse.model_validate(s) for s in standings],
         })
     return result

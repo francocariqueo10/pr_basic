@@ -1,17 +1,22 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useAdminStore } from '../../store/adminStore'
-
-const links = [
-  { to: '/', label: '🏠 Inicio', end: true },
-  { to: '/standings', label: '📊 Tabla' },
-  { to: '/matches', label: '⚽ Partidos' },
-  { to: '/playoffs', label: '🏆 Playoffs' },
-]
+import { useGroups } from '../../hooks/useGroups'
 
 export default function Navbar() {
   const isAdmin = useAdminStore(s => s.isAuthenticated)
   const location = useLocation()
   const isAdminPage = location.pathname.startsWith('/admin')
+  const { data: groups } = useGroups()
+  const mode = groups?.[0]?.mode ?? 'league'
+
+  const links = [
+    { to: '/', label: '🏠 Inicio', end: true },
+    { to: '/standings', label: '📊 Tabla' },
+    { to: '/matches', label: '⚽ Partidos' },
+    mode === 'knockout'
+      ? { to: '/bracket', label: '🏆 Bracket' }
+      : { to: '/playoffs', label: '🏆 Playoffs' },
+  ]
 
   return (
     <nav className="border-b border-[#1e2a4a] bg-[#06091a]">

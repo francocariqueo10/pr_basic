@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../api'
 import { useAdminStore } from '../../store/adminStore'
 import { useNavigate } from 'react-router-dom'
+import { useGroups } from '../../hooks/useGroups'
 
 export default function TournamentTab() {
   const qc = useQueryClient()
@@ -10,7 +11,11 @@ export default function TournamentTab() {
   const navigate = useNavigate()
   const [resetConfirm, setResetConfirm] = useState(false)
   const [regenConfirm, setRegenConfirm] = useState(false)
+  const [modeConfirm, setModeConfirm] = useState<'league' | 'knockout' | null>(null)
   const [message, setMessage] = useState('')
+
+  const { data: groups } = useGroups()
+  const currentMode = groups?.[0]?.mode ?? 'league'
 
   const invalidateAll = () => {
     qc.invalidateQueries({ queryKey: ['matches'] })
@@ -29,6 +34,20 @@ export default function TournamentTab() {
     onSuccess: (data: any) => { invalidateAll(); setMessage(data.message); setRegenConfirm(false) },
   })
 
+  const setModeMutation = useMutation({
+    mutationFn: (mode: 'league' | 'knockout') => api.admin.setMode(mode),
+    onSuccess: (data: any) => {
+      invalidateAll()
+      setMessage(data.message)
+      setModeConfirm(null)
+      if (data.mode === 'knockout') {
+        navigate('/bracket')
+      }
+    },
+  })
+
+  const pendingMode = modeConfirm ?? currentMode
+
   return (
     <div className="space-y-4 max-w-lg">
       {message && (
@@ -37,19 +56,82 @@ export default function TournamentTab() {
         </div>
       )}
 
-      {/* Regenerate */}
-      <ActionCard
-        title="Regenerar Encuentros"
-        icon="🔄"
-        description="Borra todos los partidos y genera nuevos encuentros round-robin con los jugadores actuales. Se pierden todos los resultados."
-        danger
-        confirmActive={regenConfirm}
-        onRequest={() => { setRegenConfirm(true); setResetConfirm(false); setMessage('') }}
-        onConfirm={() => regenMutation.mutate()}
-        onCancel={() => setRegenConfirm(false)}
-        isPending={regenMutation.isPending}
-        confirmLabel="Sí, regenerar torneo"
-      />
+      {/* Mode selector */}
+      <div className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl p-5">
+        <div className="flex items-center gap-2 mb-1">
+          <span>🎮</span>
+          <h3 className="font-bold">Modo de torneo</h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Cambia entre todos contra todos (liga) o eliminación directa (llaves).
+          Esto regenerará todos los partidos y se perderán los resultados actuales.
+        </p>
+
+        <div className="flex gap-3">
+          {(['league', 'knockout'] as const).map(m => {
+            const isActive = currentMode === m
+            const isPending = modeConfirm === m
+            return (
+              <button
+                key={m}
+                onClick={() => {
+                  if (!isActive) {
+                    setModeConfirm(m)
+                    setMessage('')
+                  }
+                }}
+                className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-colors ${
+                  isActive
+                    ? 'bg-[#d4af37] text-[#06091a] border-[#d4af37]'
+                    : isPending
+                    ? 'bg-[#1e2a4a] text-white border-[#d4af37]/60'
+                    : 'bg-transparent text-gray-400 border-[#1e2a4a] hover:border-gray-500 hover:text-white'
+                }`}
+              >
+                {m === 'league' ? '📊 Liga (Round Robin)' : '🏆 Llaves (Knockout)'}
+                {isActive && <span className="ml-1 text-xs font-normal">(activo)</span>}
+              </button>
+            )
+          })}
+        </div>
+
+        {modeConfirm && (
+          <div className="mt-4 pt-4 border-t border-yellow-900/30 flex gap-3 items-center">
+            <p className="flex-1 text-sm text-yellow-400">
+              ¿Cambiar a modo {modeConfirm === 'knockout' ? 'Llaves' : 'Liga'}? Se perderán todos los resultados.
+            </p>
+            <button
+              onClick={() => setModeConfirm(null)}
+              className="px-4 py-2 border border-[#1e2a4a] text-gray-400 rounded-xl text-sm hover:bg-[#1e2a4a]"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => setModeMutation.mutate(modeConfirm)}
+              disabled={setModeMutation.isPending}
+              className="px-4 py-2 bg-[#d4af37] text-[#06091a] font-bold rounded-xl text-sm hover:bg-yellow-400 transition-colors disabled:opacity-50"
+            >
+              {setModeMutation.isPending ? 'Procesando...' : 'Confirmar'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Regenerate (only in league mode) */}
+      {currentMode === 'league' && (
+        <ActionCard
+          title="Regenerar Encuentros"
+          icon="🔄"
+          description="Borra todos los partidos y genera nuevos encuentros round-robin con los jugadores actuales. Se pierden todos los resultados."
+          danger
+          confirmActive={regenConfirm}
+          onRequest={() => { setRegenConfirm(true); setResetConfirm(false); setMessage('') }}
+          onConfirm={() => regenMutation.mutate()}
+          onCancel={() => setRegenConfirm(false)}
+          isPending={regenMutation.isPending}
+          confirmLabel="Sí, regenerar torneo"
+        />
+      )}
 
       {/* Reset results */}
       <ActionCard
