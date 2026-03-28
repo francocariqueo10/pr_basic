@@ -28,12 +28,43 @@ export default function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="text-center pt-6 pb-2">
-        <h1 className="text-4xl font-black tracking-tight mb-1">
-          <span className="text-[#d4af37]">FIFA</span> TORNEO
-        </h1>
-        <p className="text-gray-500 text-sm">Jaime · Erick · Kike · Esteban · Franco</p>
+      {/* Hero */}
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0d1526] via-[#111d35] to-[#0a0e1a] border border-[#1e2a4a] px-8 py-12 text-center">
+        {/* Background glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-[#d4af37]/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="relative z-10">
+          <div className="text-6xl mb-4">🏆</div>
+          <h1 className="text-4xl font-black tracking-tight mb-3 leading-tight">
+            Bienvenidos al<br />
+            <span className="text-[#d4af37]">Campeonato FIFA 2026</span>
+          </h1>
+          <p className="text-gray-300 text-lg font-medium mb-2">
+            El momento ha llegado. La gloria te espera.
+          </p>
+          <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
+            Cinco guerreros. Un solo campeón. Cada partido es una batalla, cada gol
+            una declaración. ¿Tienes lo que se necesita para alzar el trofeo?
+          </p>
+
+          <div className="mt-6 flex justify-center gap-2 flex-wrap">
+            {['Jaime', 'Erick', 'Kike', 'Esteban', 'Franco'].map((name, i) => {
+              const colors = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6']
+              const c = colors[i]
+              return (
+                <span
+                  key={name}
+                  className="px-3 py-1 rounded-full text-sm font-semibold"
+                  style={{ backgroundColor: c + '22', color: c, border: `1px solid ${c}44` }}
+                >
+                  {name}
+                </span>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Progress bar */}
