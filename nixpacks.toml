@@ -4,7 +4,7 @@ nixPkgs = ["python312", "nodejs_20"]
 [phases.install]
 cmds = [
   "npm --prefix frontend install --include=dev",
-  "python3.12 -m ensurepip --upgrade && python3.12 -m pip install -r backend/requirements.txt"
+  "python3.12 -m pip install --break-system-packages -r backend/requirements.txt"
 ]
 
 [phases.build]
