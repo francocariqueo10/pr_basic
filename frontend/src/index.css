@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-fifa-dark text-white font-sans antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-fifa-navy;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-fifa-gold rounded-full;
+  }
+}
+
+@layer components {
+  .fifa-card {
+    @apply bg-fifa-navy border border-white/10 rounded-xl overflow-hidden;
+  }
+
+  .fifa-btn-primary {
+    @apply bg-fifa-gold text-fifa-navy font-bold px-6 py-2.5 rounded-lg hover:brightness-110 transition-all;
+  }
+
+  .fifa-badge-live {
+    @apply inline-flex items-center gap-1.5 bg-fifa-red text-white text-xs font-bold px-2.5 py-1 rounded-full;
+  }
+
+  .qualified-row {
+    @apply border-l-4 border-green-400;
+  }
+
+  .potential-row {
+    @apply border-l-4 border-yellow-400;
+  }
+
+  .eliminated-row {
+    @apply border-l-4 border-red-500;
+  }
+}
