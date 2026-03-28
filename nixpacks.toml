@@ -4,15 +4,15 @@ nixPkgs = ["python312", "nodejs_20"]
 [phases.install]
 cmds = [
   "npm --prefix frontend install --include=dev",
-    "pip3 install -r backend/requirements.txt"
-]
+    "python3.12 -m pip install -r backend/requirements.txt"
+    ]
 
-[phases.build]
-cmds = [
-  "npm --prefix frontend run build",
-  "mkdir -p backend/app/static",
-  "cp -r frontend/dist/. backend/app/static/"
-]
+    [phases.build]
+    cmds = [
+      "npm --prefix frontend run build",
+        "mkdir -p backend/app/static",
+          "cp -r frontend/dist/. backend/app/static/"
+          ]
 
-[start]
-cmd = "uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"
+          [start]
+          cmd = "uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"
