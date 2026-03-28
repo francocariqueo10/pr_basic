@@ -41,5 +41,9 @@ class MatchResponse(MatchBase):
     away_penalties: Optional[int] = None
     status: str
     winner_id: Optional[int] = None
+    bracket_round: Optional[int] = None
+    bracket_slot: Optional[int] = None
+    next_match_id: Optional[int] = None
+    next_match_home: Optional[bool] = None
 
     model_config = {"from_attributes": True}

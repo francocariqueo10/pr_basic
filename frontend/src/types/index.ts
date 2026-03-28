@@ -37,6 +37,7 @@ export interface GroupStandings {
 export interface GroupWithStandings {
   id: number
   name: string
+  mode: string
   standings: Standing[]
 }
 
@@ -60,6 +61,10 @@ export interface Match {
   kickoff_time: string | null
   match_day: number | null
   winner_id: number | null
+  bracket_round: number | null
+  bracket_slot: number | null
+  next_match_id: number | null
+  next_match_home: boolean | null
 }
 
 export interface Player {
