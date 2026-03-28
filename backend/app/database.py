@@ -1,12 +1,19 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./fifa2026.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./fifa2026.db")
+
+# Railway Postgres URLs start with postgres://, SQLAlchemy needs postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+is_sqlite = DATABASE_URL.startswith("sqlite")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    DATABASE_URL,
+    connect_args={"check_same_thread": False} if is_sqlite else {},
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
