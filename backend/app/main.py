@@ -38,9 +38,10 @@ def startup():
         from sqlalchemy import text, inspect
         inspector = inspect(engine)
         cols = [c["name"] for c in inspector.get_columns("teams")]
-        if "fifa_team" not in cols:
-            conn.execute(text("ALTER TABLE teams ADD COLUMN fifa_team VARCHAR"))
-            conn.commit()
+        for col in ["fifa_team", "nickname", "email", "avatar_url"]:
+            if col not in cols:
+                conn.execute(text(f"ALTER TABLE teams ADD COLUMN {col} VARCHAR"))
+        conn.commit()
 
     db = SessionLocal()
     try:

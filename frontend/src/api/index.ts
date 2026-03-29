@@ -35,9 +35,10 @@ export const api = {
   },
   adminTeams: {
     add: (name: string) => client.post<Team>('/teams/', { name }).then(r => r.data),
-    update: (id: number, name: string, fifa_team?: string | null) =>
-      client.put<Team>(`/teams/${id}`, { name, fifa_team }).then(r => r.data),
+    update: (id: number, data: { name: string; fifa_team?: string | null; nickname?: string | null; email?: string | null; avatar_url?: string | null }) =>
+      client.put<Team>(`/teams/${id}`, data).then(r => r.data),
     delete: (id: number) => client.delete(`/teams/${id}`).then(r => r.data),
+    invite: (id: number) => client.post(`/teams/${id}/invite`).then(r => r.data),
   },
   admin: {
     resetResults: () => client.post('/admin/reset-results').then(r => r.data),

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../api'
 import type { Team } from '../../types'
+import PlayerProfileModal from './PlayerProfileModal'
 
 // Top clubs from the 5 major European leagues
 const LEAGUES: { name: string; clubs: string[] }[] = [
@@ -71,6 +72,7 @@ export default function PlayersTab() {
   })
 
   const [newName, setNewName] = useState('')
+  const [profileTeam, setProfileTeam] = useState<{ team: Team; index: number } | null>(null)
   const [editId, setEditId] = useState<number | null>(null)
   const [editName, setEditName] = useState('')
   const [editFifaTeam, setEditFifaTeam] = useState('')
@@ -86,7 +88,7 @@ export default function PlayersTab() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, name, fifa_team }: { id: number; name: string; fifa_team?: string | null }) =>
-      api.adminTeams.update(id, name, fifa_team),
+      api.adminTeams.update(id, { name, fifa_team }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['teams'] })
       qc.invalidateQueries({ queryKey: ['matches'] })
@@ -175,12 +177,21 @@ export default function PlayersTab() {
               <div key={team.id} className="border-b border-[#1e2a4a] last:border-0">
                 <div className="flex items-center gap-4 px-5 py-4">
                   {/* Avatar */}
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0"
-                    style={{ backgroundColor: color + '22', color, border: `1px solid ${color}44` }}
-                  >
-                    {team.code.slice(0, 2)}
-                  </div>
+                  {team.avatar_url ? (
+                    <img
+                      src={team.avatar_url}
+                      alt={team.name}
+                      className="w-10 h-10 rounded-xl object-cover flex-shrink-0 border"
+                      style={{ borderColor: color + '44' }}
+                    />
+                  ) : (
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0"
+                      style={{ backgroundColor: color + '22', color, border: `1px solid ${color}44` }}
+                    >
+                      {team.code.slice(0, 2)}
+                    </div>
+                  )}
 
                   {isEditing ? (
                     /* Edit mode */
@@ -282,7 +293,12 @@ export default function PlayersTab() {
                     /* Normal view */
                     <>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold">{team.name}</div>
+                        <div className="font-semibold">
+                          {team.name}
+                          {team.nickname && (
+                            <span className="ml-2 text-xs text-gray-400 font-normal">"{team.nickname}"</span>
+                          )}
+                        </div>
                         {team.fifa_team ? (
                           <div className="text-xs text-[#d4af37]/80 mt-0.5">⚽ {team.fifa_team}</div>
                         ) : (
@@ -290,6 +306,12 @@ export default function PlayersTab() {
                         )}
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => setProfileTeam({ team, index: i })}
+                          className="px-3 py-1.5 border border-[#d4af37]/30 text-[#d4af37] rounded-lg text-xs hover:bg-[#d4af37]/10 transition-colors"
+                        >
+                          👤 Perfil
+                        </button>
                         <button
                           onClick={() => startEdit(team)}
                           className="px-3 py-1.5 border border-[#1e2a4a] text-gray-400 rounded-lg text-xs hover:bg-[#1e2a4a] hover:text-white transition-colors"
@@ -311,6 +333,14 @@ export default function PlayersTab() {
           })
         )}
       </div>
+
+      {profileTeam && (
+        <PlayerProfileModal
+          team={profileTeam.team}
+          colorIndex={profileTeam.index}
+          onClose={() => setProfileTeam(null)}
+        />
+      )}
     </div>
   )
 }
