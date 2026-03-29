@@ -14,6 +14,7 @@ class Team(Base):
     group_id = Column(Integer, ForeignKey("groups.id"), nullable=True)
     coach = Column(String, nullable=True)
     fifa_ranking = Column(Integer, nullable=True)
+    fifa_team = Column(String, nullable=True)
 
     group = relationship("Group", back_populates="teams")
     players = relationship("Player", back_populates="team")
