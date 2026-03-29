@@ -16,6 +16,7 @@ export default function Navbar() {
     mode === 'knockout'
       ? { to: '/bracket', label: '🏆 Bracket' }
       : { to: '/playoffs', label: '🏆 Playoffs' },
+    { to: '/rules', label: '📋 Reglas' },
   ]
 
   return (
