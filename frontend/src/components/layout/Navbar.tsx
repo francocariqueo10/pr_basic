@@ -9,15 +9,19 @@ export default function Navbar() {
   const { data: groups } = useGroups()
   const mode = groups?.[0]?.mode ?? 'league'
 
-  const links = [
-    { to: '/', label: '🏠 Inicio', end: true },
-    { to: '/standings', label: '📊 Tabla' },
-    { to: '/matches', label: '⚽ Partidos' },
-    mode === 'knockout'
-      ? { to: '/bracket', label: '🏆 Bracket' }
-      : { to: '/playoffs', label: '🏆 Playoffs' },
-    { to: '/rules', label: '📋 Reglas' },
-  ]
+  const links = mode === 'knockout'
+    ? [
+        { to: '/', label: '🏠 Inicio', end: true },
+        { to: '/bracket', label: '🏆 Bracket' },
+        { to: '/rules', label: '📋 Reglas' },
+      ]
+    : [
+        { to: '/', label: '🏠 Inicio', end: true },
+        { to: '/standings', label: '📊 Tabla' },
+        { to: '/matches', label: '⚽ Partidos' },
+        { to: '/playoffs', label: '🏆 Playoffs' },
+        { to: '/rules', label: '📋 Reglas' },
+      ]
 
   return (
     <nav className="border-b border-[#1e2a4a] bg-[#06091a]">

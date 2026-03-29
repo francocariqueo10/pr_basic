@@ -1,10 +1,24 @@
+import { Navigate } from 'react-router-dom'
 import { useMatches } from '../hooks/useMatches'
+import { useGroups } from '../hooks/useGroups'
 import MatchCard from '../components/match/MatchCard'
 import Spinner from '../components/ui/Spinner'
 import ErrorMessage from '../components/ui/ErrorMessage'
 import type { Match } from '../types'
 
 export default function MatchesPage() {
+  const { data: groups, isLoading: loadingGroups } = useGroups()
+  const mode = groups?.[0]?.mode ?? 'league'
+
+  // In knockout mode, redirect to the bracket page (which handles scoring)
+  if (!loadingGroups && mode === 'knockout') {
+    return <Navigate to="/bracket" replace />
+  }
+
+  return <LeagueMatchesPage />
+}
+
+function LeagueMatchesPage() {
   const { data: matches, isLoading, isError } = useMatches({ stage: 'group' })
 
   if (isLoading) return <Spinner />
@@ -17,7 +31,7 @@ export default function MatchesPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#d4af37]">Partidos de Grupos</h1>
+        <h1 className="text-2xl font-bold text-[#d4af37]">Partidos</h1>
         <span className="text-sm text-gray-500">{totalCompleted}/{total} completados</span>
       </div>
 
