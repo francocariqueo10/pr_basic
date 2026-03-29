@@ -3,15 +3,59 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../api'
 import type { Team } from '../../types'
 
-// Popular FIFA national teams for quick selection
-const FIFA_TEAMS = [
-  'Argentina', 'Brasil', 'Francia', 'Inglaterra', 'España',
-  'Alemania', 'Portugal', 'Italia', 'Países Bajos', 'Bélgica',
-  'Uruguay', 'Colombia', 'México', 'Marruecos', 'Senegal',
-  'Japón', 'Croacia', 'Estados Unidos', 'Chile', 'Ecuador',
-  'Serbia', 'Dinamarca', 'Suiza', 'Australia', 'Corea del Sur',
-  'Polonia', 'Ghana', 'Camerún', 'Turquía', 'Austria',
+// Top clubs from the 5 major European leagues
+const LEAGUES: { name: string; clubs: string[] }[] = [
+  {
+    name: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League',
+    clubs: [
+      'Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton',
+      'Chelsea', 'Crystal Palace', 'Everton', 'Fulham', 'Ipswich Town',
+      'Leicester City', 'Liverpool', 'Manchester City', 'Manchester United',
+      'Newcastle United', 'Nottingham Forest', 'Southampton', 'Tottenham',
+      'West Ham United', 'Wolverhampton',
+    ],
+  },
+  {
+    name: '🇩🇪 Bundesliga',
+    clubs: [
+      'Bayern Munich', 'Bayer Leverkusen', 'Borussia Dortmund', 'RB Leipzig',
+      'Eintracht Frankfurt', 'VfB Stuttgart', 'SC Freiburg', 'Hoffenheim',
+      'Werder Bremen', 'Borussia Mönchengladbach', 'Augsburg', 'Wolfsburg',
+      'Union Berlin', 'Mainz', 'Bochum', 'Heidenheim', 'Holstein Kiel', 'St. Pauli',
+    ],
+  },
+  {
+    name: '🇮🇹 Serie A',
+    clubs: [
+      'Inter Milan', 'AC Milan', 'Juventus', 'Napoli', 'Atalanta',
+      'Roma', 'Lazio', 'Fiorentina', 'Bologna', 'Torino',
+      'Genoa', 'Cagliari', 'Udinese', 'Sassuolo', 'Lecce',
+      'Hellas Verona', 'Monza', 'Como', 'Venezia', 'Parma',
+    ],
+  },
+  {
+    name: '🇪🇸 La Liga',
+    clubs: [
+      'Real Madrid', 'FC Barcelona', 'Atlético de Madrid', 'Athletic Bilbao',
+      'Real Sociedad', 'Villarreal', 'Real Betis', 'Sevilla',
+      'Valencia', 'Celta Vigo', 'Girona', 'Osasuna',
+      'Getafe', 'Rayo Vallecano', 'Mallorca', 'Deportivo Alavés',
+      'Las Palmas', 'Leganés', 'Valladolid', 'Espanyol',
+    ],
+  },
+  {
+    name: '🇫🇷 Ligue 1',
+    clubs: [
+      'Paris Saint-Germain', 'Olympique de Marseille', 'Monaco',
+      'Lens', 'Lille', 'Lyon', 'Nice', 'Rennes',
+      'Strasbourg', 'Nantes', 'Reims', 'Montpellier',
+      'Toulouse', 'Brest', 'Le Havre', 'Auxerre',
+      'Angers', 'Saint-Étienne',
+    ],
+  },
 ]
+
+const FIFA_TEAMS = LEAGUES.flatMap(l => l.clubs)
 
 const PALETTE = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63','#00bcd4','#8bc34a']
 
@@ -86,9 +130,7 @@ export default function PlayersTab() {
     })
   }
 
-  const filteredTeams = fifaSearch.length > 0
-    ? FIFA_TEAMS.filter(t => t.toLowerCase().includes(fifaSearch.toLowerCase()))
-    : FIFA_TEAMS
+  const filteredTeams = FIFA_TEAMS.filter(t => t.toLowerCase().includes(fifaSearch.toLowerCase()))
 
   return (
     <div className="space-y-6">
@@ -185,24 +227,36 @@ export default function PlayersTab() {
                         )}
                         <input
                           type="text"
-                          placeholder="Buscar equipo..."
+                          placeholder="Buscar club..."
                           value={fifaSearch}
                           onChange={e => setFifaSearch(e.target.value)}
                           className="w-full bg-[#1e2a4a] border border-[#2a3a6a] rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#d4af37]/60"
                         />
-                        <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
-                          {filteredTeams.map(ft => (
-                            <button
-                              key={ft}
-                              onClick={() => { setEditFifaTeam(ft); setFifaSearch('') }}
-                              className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
-                                editFifaTeam === ft
-                                  ? 'bg-[#d4af37]/20 border-[#d4af37]/60 text-[#d4af37]'
-                                  : 'bg-[#0a0e1a] border-[#1e2a4a] text-gray-400 hover:border-gray-500 hover:text-white'
-                              }`}
-                            >
-                              {ft}
-                            </button>
+                        <div className="max-h-48 overflow-y-auto space-y-3 pr-1">
+                          {(fifaSearch
+                            ? [{ name: 'Resultados', clubs: filteredTeams }]
+                            : LEAGUES
+                          ).map(league => (
+                            <div key={league.name}>
+                              <div className="text-xs text-gray-500 font-semibold mb-1.5 sticky top-0 bg-[#0d1526] py-0.5">
+                                {league.name}
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {league.clubs.map(ft => (
+                                  <button
+                                    key={ft}
+                                    onClick={() => { setEditFifaTeam(ft); setFifaSearch('') }}
+                                    className={`px-2.5 py-1 text-xs rounded-lg border transition-colors ${
+                                      editFifaTeam === ft
+                                        ? 'bg-[#d4af37]/20 border-[#d4af37]/60 text-[#d4af37]'
+                                        : 'bg-[#0a0e1a] border-[#1e2a4a] text-gray-400 hover:border-gray-500 hover:text-white'
+                                    }`}
+                                  >
+                                    {ft}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
