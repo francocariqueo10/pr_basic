@@ -6,6 +6,7 @@ from ..models import Team, Match, Standing, Goal, Group
 from ..models.player import Player
 from ..schemas.team import TeamResponse
 from ..services.tournament import regenerate_fixtures
+from ..services.knockout import generate_knockout_bracket
 
 router = APIRouter(prefix="/api/v1/teams", tags=["teams"])
 
@@ -95,9 +96,15 @@ def add_player(data: TeamCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(team)
 
-    # Auto-regenerate fixtures so every player faces every other player
-    regenerate_fixtures(db)
-    db.refresh(team)
+    # Only auto-generate if no matches have been created yet
+    has_matches = db.query(Match).count() > 0
+    if not has_matches:
+        group = db.query(Group).first()
+        if group and group.mode == 'knockout':
+            generate_knockout_bracket(db)
+        else:
+            regenerate_fixtures(db)
+        db.refresh(team)
 
     return TeamResponse.model_validate(team)
 
@@ -164,7 +171,10 @@ def delete_player(team_id: int, db: Session = Depends(get_db)):
     db.delete(team)
     db.commit()
 
-    # Auto-regenerate fixtures with the remaining players
-    regenerate_fixtures(db)
+    # In league mode, regenerate round-robin with remaining players.
+    # In knockout mode, leave bracket intact (admin can regenerate manually).
+    group = db.query(Group).first()
+    if group and group.mode == 'league':
+        regenerate_fixtures(db)
 
     return {"message": "Jugador eliminado"}

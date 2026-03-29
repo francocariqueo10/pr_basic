@@ -51,6 +51,18 @@ def regenerate_tournament(db: Session = Depends(get_db)):
     return {"message": message}
 
 
+@router.post("/generate-bracket")
+def generate_bracket(db: Session = Depends(get_db)):
+    """Regenerate knockout bracket, clearing existing matches and results."""
+    group = db.query(Group).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="No group found")
+    if group.mode != 'knockout':
+        raise HTTPException(status_code=400, detail="El torneo no está en modo llaves")
+    message = generate_knockout_bracket(db)
+    return {"message": message}
+
+
 @router.post("/set-mode")
 def set_mode(body: SetModeRequest, db: Session = Depends(get_db)):
     """Switch tournament mode between league and knockout, regenerating fixtures."""

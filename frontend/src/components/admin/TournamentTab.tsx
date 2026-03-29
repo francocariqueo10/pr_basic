@@ -11,6 +11,7 @@ export default function TournamentTab() {
   const navigate = useNavigate()
   const [resetConfirm, setResetConfirm] = useState(false)
   const [regenConfirm, setRegenConfirm] = useState(false)
+  const [bracketConfirm, setBracketConfirm] = useState(false)
   const [modeConfirm, setModeConfirm] = useState<'league' | 'knockout' | null>(null)
   const [message, setMessage] = useState('')
 
@@ -45,6 +46,18 @@ export default function TournamentTab() {
       }
     },
   })
+
+  const bracketMutation = useMutation({
+    mutationFn: () => api.admin.generateBracket(),
+    onSuccess: (data: any) => {
+      invalidateAll()
+      setMessage(data.message)
+      setBracketConfirm(false)
+      navigate('/bracket')
+    },
+  })
+
+  const pendingMode = modeConfirm ?? currentMode
 
   return (
     <div className="space-y-4 max-w-lg">
@@ -115,7 +128,7 @@ export default function TournamentTab() {
         )}
       </div>
 
-      {/* Regenerate (only in league mode) */}
+      {/* Regenerate (league mode only) */}
       {currentMode === 'league' && (
         <ActionCard
           title="Regenerar Encuentros"
@@ -128,6 +141,22 @@ export default function TournamentTab() {
           onCancel={() => setRegenConfirm(false)}
           isPending={regenMutation.isPending}
           confirmLabel="Sí, regenerar torneo"
+        />
+      )}
+
+      {/* Generate bracket (knockout mode only) */}
+      {currentMode === 'knockout' && (
+        <ActionCard
+          title="Generar Partidos"
+          icon="🎲"
+          description="Sortea y genera las llaves de eliminación directa con los jugadores actuales. Se pierden los resultados existentes."
+          danger
+          confirmActive={bracketConfirm}
+          onRequest={() => { setBracketConfirm(true); setResetConfirm(false); setMessage('') }}
+          onConfirm={() => bracketMutation.mutate()}
+          onCancel={() => setBracketConfirm(false)}
+          isPending={bracketMutation.isPending}
+          confirmLabel="Sí, generar llaves"
         />
       )}
 
