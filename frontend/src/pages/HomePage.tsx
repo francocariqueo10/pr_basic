@@ -105,7 +105,12 @@ export default function HomePage() {
                     >
                       {s.team.code.slice(0, 2)}
                     </div>
-                    <span className="font-semibold">{s.team.name}</span>
+                    <div>
+                      <div className="font-semibold">{s.team.name}</div>
+                      {s.team.fifa_team && (
+                        <div className="text-xs text-[#d4af37]/60">{s.team.fifa_team}</div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-5 text-sm text-gray-400">
                     <span>{s.played} PJ</span>

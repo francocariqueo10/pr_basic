@@ -9,6 +9,7 @@ class TeamBase(BaseModel):
     confederation: str
     coach: Optional[str] = None
     fifa_ranking: Optional[int] = None
+    fifa_team: Optional[str] = None
 
 
 class TeamCreate(TeamBase):
@@ -27,5 +28,6 @@ class TeamSimple(BaseModel):
     name: str
     code: str
     flag_url: Optional[str] = None
+    fifa_team: Optional[str] = None
 
     model_config = {"from_attributes": True}

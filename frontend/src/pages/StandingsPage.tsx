@@ -67,7 +67,12 @@ export default function StandingsPage() {
                       >
                         {s.team.code.slice(0, 2)}
                       </div>
-                      <span className="font-semibold">{s.team.name}</span>
+                      <div>
+                        <div className="font-semibold">{s.team.name}</div>
+                        {s.team.fifa_team && (
+                          <div className="text-xs text-[#d4af37]/60">{s.team.fifa_team}</div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-3 py-4 text-center text-gray-400">{s.played}</td>

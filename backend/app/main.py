@@ -33,6 +33,15 @@ app.include_router(admin_router.router)
 
 @app.on_event("startup")
 def startup():
+    # Add new columns to existing tables if missing (simple migration)
+    with engine.connect() as conn:
+        from sqlalchemy import text, inspect
+        inspector = inspect(engine)
+        cols = [c["name"] for c in inspector.get_columns("teams")]
+        if "fifa_team" not in cols:
+            conn.execute(text("ALTER TABLE teams ADD COLUMN fifa_team VARCHAR"))
+            conn.commit()
+
     db = SessionLocal()
     try:
         seed_database(db)

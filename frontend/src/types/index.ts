@@ -3,6 +3,7 @@ export interface TeamSimple {
   name: string
   code: string
   flag_url: string | null
+  fifa_team: string | null
 }
 
 export interface Team extends TeamSimple {
@@ -10,6 +11,7 @@ export interface Team extends TeamSimple {
   group_id: number | null
   coach: string | null
   fifa_ranking: number | null
+  fifa_team: string | null
 }
 
 export interface Standing {

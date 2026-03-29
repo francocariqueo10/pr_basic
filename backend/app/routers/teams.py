@@ -20,6 +20,7 @@ class TeamCreate(BaseModel):
 
 class TeamUpdate(BaseModel):
     name: str
+    fifa_team: str | None = None
 
 
 @router.get("/")
@@ -121,6 +122,8 @@ def update_player(team_id: int, data: TeamUpdate, db: Session = Depends(get_db))
         raise HTTPException(status_code=400, detail="Ya existe un jugador con ese nombre")
 
     team.name = name
+    if data.fifa_team is not None:
+        team.fifa_team = data.fifa_team or None
     # Also update player avatar name
     avatar = db.query(Player).filter(Player.team_id == team_id).first()
     if avatar:

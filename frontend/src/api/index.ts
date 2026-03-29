@@ -35,7 +35,8 @@ export const api = {
   },
   adminTeams: {
     add: (name: string) => client.post<Team>('/teams/', { name }).then(r => r.data),
-    update: (id: number, name: string) => client.put<Team>(`/teams/${id}`, { name }).then(r => r.data),
+    update: (id: number, name: string, fifa_team?: string | null) =>
+      client.put<Team>(`/teams/${id}`, { name, fifa_team }).then(r => r.data),
     delete: (id: number) => client.delete(`/teams/${id}`).then(r => r.data),
   },
   admin: {

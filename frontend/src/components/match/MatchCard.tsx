@@ -67,6 +67,7 @@ export default function MatchCard({ match, showEdit = true }: Props) {
           <TeamBlock
             name={match.home_team?.name ?? 'Por definir'}
             code={match.home_team?.code}
+            fifaTeam={match.home_team?.fifa_team}
             isWinner={!!match.winner_id && match.winner_id === match.home_team?.id}
             isLoser={!!match.winner_id && match.winner_id !== match.home_team?.id && isCompleted}
           />
@@ -90,6 +91,7 @@ export default function MatchCard({ match, showEdit = true }: Props) {
           <TeamBlock
             name={match.away_team?.name ?? 'Por definir'}
             code={match.away_team?.code}
+            fifaTeam={match.away_team?.fifa_team}
             isWinner={!!match.winner_id && match.winner_id === match.away_team?.id}
             isLoser={!!match.winner_id && match.winner_id !== match.away_team?.id && isCompleted}
             reverse
@@ -105,10 +107,11 @@ export default function MatchCard({ match, showEdit = true }: Props) {
 }
 
 function TeamBlock({
-  name, code, isWinner, isLoser, reverse = false,
+  name, code, fifaTeam, isWinner, isLoser, reverse = false,
 }: {
   name: string
   code?: string | null
+  fifaTeam?: string | null
   isWinner: boolean
   isLoser: boolean
   reverse?: boolean
@@ -123,11 +126,18 @@ function TeamBlock({
       >
         {code?.slice(0, 2) ?? '??'}
       </div>
-      <span className={`font-semibold text-sm leading-tight ${
-        isWinner ? 'text-white' : isLoser ? 'text-gray-600' : 'text-gray-300'
-      } ${reverse ? 'text-right' : ''}`}>
-        {name}
-      </span>
+      <div className={`min-w-0 ${reverse ? 'text-right' : ''}`}>
+        <div className={`font-semibold text-sm leading-tight ${
+          isWinner ? 'text-white' : isLoser ? 'text-gray-600' : 'text-gray-300'
+        }`}>
+          {name}
+        </div>
+        {fifaTeam && (
+          <div className={`text-xs truncate ${isLoser ? 'text-gray-700' : 'text-[#d4af37]/60'}`}>
+            {fifaTeam}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
