@@ -8,6 +8,7 @@ import PlayoffsPage from './pages/PlayoffsPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminPage from './pages/AdminPage'
 import BracketPage from './pages/BracketPage'
+import RulesPage from './pages/RulesPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="matches" element={<MatchesPage />} />
             <Route path="playoffs" element={<PlayoffsPage />} />
             <Route path="bracket" element={<BracketPage />} />
+            <Route path="rules" element={<RulesPage />} />
             <Route path="admin/login" element={<AdminLoginPage />} />
             <Route path="admin" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
