@@ -57,8 +57,7 @@ export default function TournamentTab() {
     },
   })
 
-  const pendingMode = modeConfirm ?? currentMode
-
+  
   return (
     <div className="space-y-4 max-w-lg">
       {message && (
