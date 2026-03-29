@@ -4,6 +4,8 @@ export interface TeamSimple {
   code: string
   flag_url: string | null
   fifa_team: string | null
+  nickname: string | null
+  avatar_url: string | null
 }
 
 export interface Team extends TeamSimple {
@@ -12,6 +14,9 @@ export interface Team extends TeamSimple {
   coach: string | null
   fifa_ranking: number | null
   fifa_team: string | null
+  nickname: string | null
+  email: string | null
+  avatar_url: string | null
 }
 
 export interface Standing {

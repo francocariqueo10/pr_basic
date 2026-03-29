@@ -15,6 +15,9 @@ class Team(Base):
     coach = Column(String, nullable=True)
     fifa_ranking = Column(Integer, nullable=True)
     fifa_team = Column(String, nullable=True)
+    nickname = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)  # URL or base64 data URL
 
     group = relationship("Group", back_populates="teams")
     players = relationship("Player", back_populates="team")
