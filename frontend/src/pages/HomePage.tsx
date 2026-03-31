@@ -175,6 +175,68 @@ export default function HomePage() {
           </Link>
         ))}
       </section>
+
+      {/* Sponsors carousel */}
+      <section>
+        <p className="text-xs text-gray-600 text-center uppercase tracking-widest mb-4">Patrocinadores</p>
+        <div className="relative overflow-hidden">
+          <div className="flex animate-marquee gap-12 items-center w-max">
+            {[...SPONSORS, ...SPONSORS].map((s, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 flex items-center justify-center h-10 px-2 opacity-40 hover:opacity-80 transition-opacity"
+                title={s.name}
+              >
+                <img src={s.logo} alt={s.name} className="h-full object-contain grayscale hover:grayscale-0 transition-all" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Spotify playlist */}
+      <section className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl overflow-hidden">
+        <div className="px-5 pt-5 pb-2 flex items-center gap-2">
+          <span className="text-green-400 text-lg">♫</span>
+          <span className="font-bold text-sm">Playlist del Torneo</span>
+          <a
+            href="https://open.spotify.com/playlist/5I64H3Bw78wAL13AcwuKeh?si=4250f2fe95e84772"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto text-xs text-green-400 hover:underline"
+          >
+            Abrir en Spotify ↗
+          </a>
+        </div>
+        <iframe
+          src="https://open.spotify.com/embed/playlist/5I64H3Bw78wAL13AcwuKeh?utm_source=generator&theme=0"
+          width="100%"
+          height="152"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          className="block"
+        />
+      </section>
     </div>
   )
 }
+
+const SPONSORS = [
+  {
+    name: 'Coca-Cola',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/320px-Coca-Cola_logo.svg.png',
+  },
+  {
+    name: 'Betano',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Betano_logo.svg/320px-Betano_logo.svg.png',
+  },
+  {
+    name: 'Cristal',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Cristal_Logo.svg/320px-Cristal_Logo.svg.png',
+  },
+  {
+    name: 'Adidas',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/320px-Adidas_Logo.svg.png',
+  },
+]
