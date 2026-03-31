@@ -4,11 +4,16 @@ from ..models.player import Player
 
 
 PLAYERS = [
-    {"name": "Jaime",   "code": "JAI", "color": "#e74c3c"},
-    {"name": "Erick",   "code": "ERI", "color": "#3498db"},
-    {"name": "Kike",    "code": "KIK", "color": "#2ecc71"},
-    {"name": "Esteban", "code": "EST", "color": "#f39c12"},
-    {"name": "Franco",  "code": "FRA", "color": "#9b59b6"},
+    {"name": "Jaime",    "code": "JAI", "color": "#e74c3c"},
+    {"name": "Erick",    "code": "ERI", "color": "#3498db"},
+    {"name": "Kike",     "code": "KIK", "color": "#2ecc71"},
+    {"name": "Esteban",  "code": "EST", "color": "#f39c12"},
+    {"name": "Franco",   "code": "FRA", "color": "#9b59b6"},
+    {"name": "Jorge",    "code": "JOR", "color": "#1abc9c"},
+    {"name": "Oliver",   "code": "OLI", "color": "#e67e22"},
+    {"name": "Jonathan", "code": "JON", "color": "#e91e63"},
+    {"name": "Gerardo",  "code": "GER", "color": "#00bcd4"},
+    {"name": "Iván",     "code": "IVA", "color": "#8bc34a"},
 ]
 
 

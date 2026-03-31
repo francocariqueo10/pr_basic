@@ -41,14 +41,13 @@ export default function HomePage() {
             El momento ha llegado. La gloria te espera.
           </p>
           <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
-            Cinco guerreros. Un solo campeón. Cada partido es una batalla, cada gol
+            Diez guerreros. Un solo campeón. Cada partido es una batalla, cada gol
             una declaración. ¿Tienes lo que se necesita para alzar el trofeo?
           </p>
 
           <div className="mt-6 flex justify-center gap-2 flex-wrap">
-            {['Jaime', 'Erick', 'Kike', 'Esteban', 'Franco'].map((name, i) => {
-              const colors = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6']
-              const c = colors[i]
+            {['Jaime', 'Erick', 'Kike', 'Esteban', 'Franco', 'Jorge', 'Oliver', 'Jonathan', 'Gerardo', 'Iván'].map((name, i) => {
+              const c = PALETTE[i % PALETTE.length]
               return (
                 <span
                   key={name}
