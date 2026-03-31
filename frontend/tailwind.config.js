@@ -21,11 +21,21 @@ export default {
       animation: {
         'pulse-live': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'marquee': 'marquee 18s linear infinite',
+        'ball-pop': 'ball-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        'ball-wait': 'ball-wait 1s ease-in-out infinite',
       },
       keyframes: {
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
+        },
+        'ball-pop': {
+          '0%': { transform: 'scale(0) rotate(-15deg)', opacity: '0' },
+          '100%': { transform: 'scale(1) rotate(0deg)', opacity: '1' },
+        },
+        'ball-wait': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-6px)' },
         },
       }
     },

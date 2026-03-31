@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useGroups } from '../hooks/useGroups'
 import { useMatches } from '../hooks/useMatches'
-import MatchCard from '../components/match/MatchCard'
-import Spinner from '../components/ui/Spinner'
 
 const COLORS: Record<string, string> = {
   JAI: '#e74c3c',
@@ -11,20 +9,18 @@ const COLORS: Record<string, string> = {
   EST: '#f39c12',
   FRA: '#9b59b6',
 }
+const PALETTE = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22','#e91e63','#00bcd4','#8bc34a']
 
 export default function HomePage() {
-  const { data: groups, isLoading: loadingGroups } = useGroups()
-  const { data: matches, isLoading: loadingMatches } = useMatches({ stage: 'group' })
+  const { data: groups } = useGroups()
+  const { data: matches } = useMatches()
 
   const standings = groups?.[0]?.standings ?? []
-  const completedMatches = matches?.filter(m => m.status === 'completed') ?? []
-  const pendingMatches = matches?.filter(m => m.status === 'scheduled') ?? []
-  const recentMatches = [...completedMatches].reverse().slice(0, 4)
-  const nextMatches = pendingMatches.slice(0, 4)
-
-  const totalMatches = matches?.length ?? 10
+  const bracketMatches = (matches ?? []).filter(m => m.bracket_round !== null)
+  const completedMatches = bracketMatches.filter(m => m.status === 'completed')
+  const totalMatches = bracketMatches.filter(m => m.home_team && m.away_team).length
   const completed = completedMatches.length
-  const progress = Math.round((completed / totalMatches) * 100)
+  const progress = totalMatches > 0 ? Math.round((completed / totalMatches) * 100) : 0
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
@@ -100,88 +96,40 @@ export default function HomePage() {
         <div className="text-xs text-gray-500 mt-2 text-right">{progress}% completado</div>
       </div>
 
-      {/* Standings preview */}
+      {/* Players grid */}
       <section>
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="font-bold text-lg">Tabla</h2>
-          <Link to="/standings" className="text-sm text-[#d4af37] hover:underline">Ver completa →</Link>
-        </div>
-        {loadingGroups ? <Spinner size="sm" /> : (
-          <div className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl overflow-hidden">
-            {standings.map((s, i) => {
-              const color = COLORS[s.team.code] ?? '#888'
-              return (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between px-5 py-3 border-b border-[#1e2a4a] last:border-0 hover:bg-[#1e2a4a]/30 transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-600 font-mono w-4 text-sm">{i + 1}</span>
-                    <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black"
-                      style={{ backgroundColor: color + '22', color, border: `1px solid ${color}44` }}
-                    >
-                      {s.team.code.slice(0, 2)}
-                    </div>
-                    <div>
-                      <div className="font-semibold">{s.team.name}</div>
-                      {s.team.fifa_team && (
-                        <div className="text-xs text-[#d4af37]/60">{s.team.fifa_team}</div>
-                      )}
-                    </div>
+        <h2 className="font-bold text-lg mb-3">Participantes</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {standings.map((s, i) => {
+            const color = COLORS[s.team.code] ?? PALETTE[i % PALETTE.length]
+            return (
+              <div
+                key={s.id}
+                className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl p-4 flex items-center gap-3 hover:border-[#1e2a4a]/80 transition-colors"
+              >
+                {s.team.avatar_url ? (
+                  <img src={s.team.avatar_url} alt={s.team.name} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" style={{ border: `1px solid ${color}44` }} />
+                ) : (
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0"
+                    style={{ backgroundColor: color + '22', color, border: `1px solid ${color}44` }}>
+                    {s.team.code.slice(0, 2)}
                   </div>
-                  <div className="flex items-center gap-5 text-sm text-gray-400">
-                    <span>{s.played} PJ</span>
-                    <span className="text-gray-500">
-                      {s.goal_difference >= 0 ? '+' : ''}{s.goal_difference} DG
-                    </span>
-                    <span className="text-[#d4af37] font-black text-base w-6 text-right">{s.points}</span>
-                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="font-semibold text-sm truncate">{s.team.name}</div>
+                  {s.team.fifa_team && <div className="text-xs text-[#d4af37]/60 truncate">{s.team.fifa_team}</div>}
                 </div>
-              )
-            })}
-          </div>
-        )}
+              </div>
+            )
+          })}
+        </div>
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Recent results */}
-        {recentMatches.length > 0 && (
-          <section>
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-bold">Últimos resultados</h2>
-              <Link to="/matches" className="text-xs text-[#d4af37] hover:underline">Ver todos →</Link>
-            </div>
-            {loadingMatches ? <Spinner size="sm" /> : (
-              <div className="space-y-2">
-                {recentMatches.map(m => <MatchCard key={m.id} match={m} />)}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* Upcoming matches */}
-        {nextMatches.length > 0 && (
-          <section>
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="font-bold">Próximos partidos</h2>
-              <Link to="/matches" className="text-xs text-[#d4af37] hover:underline">Ver todos →</Link>
-            </div>
-            {loadingMatches ? <Spinner size="sm" /> : (
-              <div className="space-y-2">
-                {nextMatches.map(m => <MatchCard key={m.id} match={m} />)}
-              </div>
-            )}
-          </section>
-        )}
-      </div>
-
       {/* Quick nav */}
-      <section className="grid grid-cols-3 gap-3">
+      <section className="grid grid-cols-2 gap-3">
         {[
-          { to: '/standings', icon: '📊', label: 'Tabla' },
-          { to: '/matches', icon: '⚽', label: 'Partidos' },
-          { to: '/playoffs', icon: '🏆', label: 'Playoffs' },
+          { to: '/bracket', icon: '🏆', label: 'Ver Bracket' },
+          { to: '/rules', icon: '📋', label: 'Reglas' },
         ].map(item => (
           <Link
             key={item.to}

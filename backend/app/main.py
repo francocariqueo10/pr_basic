@@ -37,10 +37,12 @@ def startup():
     with engine.connect() as conn:
         from sqlalchemy import text, inspect
         inspector = inspect(engine)
-        cols = [c["name"] for c in inspector.get_columns("teams")]
+        team_cols = [c["name"] for c in inspector.get_columns("teams")]
         for col in ["fifa_team", "nickname", "email", "avatar_url"]:
-            if col not in cols:
+            if col not in team_cols:
                 conn.execute(text(f"ALTER TABLE teams ADD COLUMN {col} VARCHAR"))
+        # Ensure all groups are in knockout mode
+        conn.execute(text("UPDATE groups SET mode = 'knockout' WHERE mode != 'knockout' OR mode IS NULL"))
         conn.commit()
 
     db = SessionLocal()

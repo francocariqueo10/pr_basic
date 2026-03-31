@@ -42,8 +42,7 @@ export const api = {
   },
   admin: {
     resetResults: () => client.post('/admin/reset-results').then(r => r.data),
-    regenerate: () => client.post('/admin/regenerate').then(r => r.data),
-    setMode: (mode: 'league' | 'knockout') => client.post('/admin/set-mode', { mode }).then(r => r.data),
     generateBracket: () => client.post('/admin/generate-bracket').then(r => r.data),
+    drawBracket: (teamIds: number[]) => client.post('/admin/draw-bracket', { team_ids: teamIds }).then(r => r.data),
   },
 }

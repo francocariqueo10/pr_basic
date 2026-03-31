@@ -16,7 +16,8 @@ def _ko_stage(round_num: int, total_rounds: int) -> str:
         return f'ko_r{round_num}'
 
 
-def generate_knockout_bracket(db: Session) -> str:
+def generate_knockout_bracket(db: Session, ordered_ids: list | None = None) -> str:
+    """Generate bracket. If ordered_ids is provided, use that draw order; otherwise shuffle randomly."""
     # Clear all matches, goals and reset standings
     db.query(Goal).delete()
     db.query(Match).delete()
@@ -36,8 +37,15 @@ def generate_knockout_bracket(db: Session) -> str:
         db.commit()
         return "Se necesitan al menos 2 jugadores"
 
-    shuffled = teams[:]
-    random.shuffle(shuffled)
+    if ordered_ids:
+        team_map = {t.id: t for t in teams}
+        shuffled = [team_map[tid] for tid in ordered_ids if tid in team_map]
+        # Append any teams not in ordered_ids (safety fallback)
+        included = set(ordered_ids)
+        shuffled += [t for t in teams if t.id not in included]
+    else:
+        shuffled = teams[:]
+        random.shuffle(shuffled)
 
     # Pad to next power of 2 with None (byes)
     size = 1
