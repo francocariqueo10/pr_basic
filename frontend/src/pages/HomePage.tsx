@@ -225,18 +225,18 @@ export default function HomePage() {
 const SPONSORS = [
   {
     name: 'Coca-Cola',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/320px-Coca-Cola_logo.svg.png',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP7xBmbfZsKPaxJer2nIj7x8AV-wVsL6ME6g&s',
   },
   {
     name: 'Betano',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Betano_logo.svg/320px-Betano_logo.svg.png',
+    logo: 'https://logos-world.net/wp-content/uploads/2024/10/Betano-Logo-New.png',
   },
   {
     name: 'Cristal',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Cristal_Logo.svg/320px-Cristal_Logo.svg.png',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-_QCngXTp2Y5RFql__ZCr0lZzy5O8vBJ5mQ&s',
   },
   {
     name: 'Adidas',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/320px-Adidas_Logo.svg.png',
+    logo: 'https://www.logo.wine/a/logo/Adidas/Adidas-Logo.wine.svg',
   },
 ]
