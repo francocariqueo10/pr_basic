@@ -67,6 +67,24 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Sponsors carousel */}
+      <section>
+        <p className="text-xs text-gray-400 text-center uppercase tracking-widest mb-4">Patrocinadores</p>
+        <div className="relative overflow-hidden bg-white rounded-2xl py-5 px-2 shadow-sm">
+          <div className="flex animate-marquee gap-16 items-center w-max">
+            {[...SPONSORS, ...SPONSORS].map((s, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 flex items-center justify-center h-10 px-4 opacity-70 hover:opacity-100 transition-opacity"
+                title={s.name}
+              >
+                <img src={s.logo} alt={s.name} className="h-full object-contain" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Progress bar */}
       <div className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl p-5">
         <div className="flex justify-between text-sm mb-3">
@@ -174,24 +192,6 @@ export default function HomePage() {
             <div className="text-sm font-semibold text-gray-300">{item.label}</div>
           </Link>
         ))}
-      </section>
-
-      {/* Sponsors carousel */}
-      <section>
-        <p className="text-xs text-gray-600 text-center uppercase tracking-widest mb-4">Patrocinadores</p>
-        <div className="relative overflow-hidden">
-          <div className="flex animate-marquee gap-12 items-center w-max">
-            {[...SPONSORS, ...SPONSORS].map((s, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 flex items-center justify-center h-10 px-2 opacity-40 hover:opacity-80 transition-opacity"
-                title={s.name}
-              >
-                <img src={s.logo} alt={s.name} className="h-full object-contain grayscale hover:grayscale-0 transition-all" />
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Spotify playlist */}
