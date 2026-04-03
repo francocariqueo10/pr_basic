@@ -28,7 +28,7 @@ function TeamSlot({ team, isWinner }: { team: TeamSimple | null; isWinner: boole
   return (
     <div
       className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-        isWinner ? 'bg-[#d4af37]/10 border border-[#d4af37]/40' : 'bg-[#0d1526] border border-[#1e2a4a]'
+        isWinner ? 'bg-white/8 border border-ucl-blue/50' : 'bg-ucl-black border border-white/8'
       }`}
     >
       {team ? (
@@ -40,14 +40,14 @@ function TeamSlot({ team, isWinner }: { team: TeamSimple | null; isWinner: boole
             {team.code.slice(0, 2)}
           </div>
           <div className="min-w-0 flex-1">
-            <div className={`text-sm font-semibold ${isWinner ? 'text-[#d4af37]' : 'text-white'} truncate`}>
+            <div className={`text-sm font-semibold ${isWinner ? 'text-white font-black' : 'text-white'} truncate`}>
               {team.name}
             </div>
             {team.fifa_team && (
               <div className="text-xs text-gray-500 truncate">{team.fifa_team}</div>
             )}
           </div>
-          {isWinner && <span className="ml-auto text-[#d4af37] text-xs flex-shrink-0">★</span>}
+          {isWinner && <span className="ml-auto text-ucl-blue text-xs flex-shrink-0">★</span>}
         </>
       ) : (
         <span className="text-sm text-gray-600 italic">Por definir</span>
@@ -64,11 +64,11 @@ function BracketMatchCard({ match, onClick }: { match: Match; onClick: () => voi
 
   return (
     <div
-      className={`bg-[#0a0e1a] border rounded-xl p-3 w-56 flex-shrink-0 transition-all ${
+      className={`bg-ucl-navy border rounded-xl p-3 w-56 flex-shrink-0 transition-all ${
         canEdit
-          ? 'cursor-pointer hover:border-[#d4af37]/50 hover:bg-[#1e2a4a]/30'
-          : 'border-[#1e2a4a]'
-      } ${match.status === 'completed' ? 'border-green-900/40' : 'border-[#1e2a4a]'}`}
+          ? 'cursor-pointer hover:border-ucl-blue/50 hover:bg-white/3'
+          : 'border-white/8'
+      } ${match.status === 'completed' ? 'border-green-900/40' : 'border-white/8'}`}
       onClick={() => canEdit && onClick()}
     >
       <div className="space-y-1.5">
@@ -93,9 +93,9 @@ function BracketMatchCard({ match, onClick }: { match: Match; onClick: () => voi
         {match.status === 'completed' ? (
           <span className="text-xs text-green-500 font-medium">✓ Finalizado</span>
         ) : hasBothTeams ? (
-          <span className="text-xs text-[#d4af37]/60">Toca para anotar resultado</span>
+          <span className="text-xs text-ucl-silver">Toca para anotar resultado</span>
         ) : (
-          <span className="text-xs text-gray-600">Pendiente</span>
+          <span className="text-xs text-ucl-silver/40">Pendiente</span>
         )}
       </div>
     </div>
@@ -163,19 +163,18 @@ export default function BracketPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black">Bracket de Eliminación</h1>
-          <p className="text-sm text-gray-400 mt-1">Toca un partido para registrar el resultado</p>
+          <h1 className="text-2xl font-black uppercase tracking-wide">Bracket de Eliminación</h1>
+          <p className="text-sm text-ucl-silver mt-1">Toca un partido para registrar el resultado</p>
         </div>
-        <span className="text-sm text-gray-500">{totalPlayed}/{totalReal} jugados</span>
+        <span className="text-sm text-ucl-silver">{totalPlayed}/{totalReal} jugados</span>
       </div>
 
       {/* Champion banner */}
       {champion && (
-        <div className="bg-gradient-to-r from-[#d4af37]/10 via-[#d4af37]/20 to-[#d4af37]/10 border border-[#d4af37]/40 rounded-2xl p-6 text-center">
-          <div className="text-4xl mb-2">🏆</div>
-          <div className="text-sm text-[#d4af37] font-semibold mb-1">CAMPEÓN</div>
-          <div className="text-2xl font-black">{champion.name}</div>
-          {champion.fifa_team && <div className="text-[#d4af37]/60 text-sm mt-1">{champion.fifa_team}</div>}
+        <div className="bg-gradient-to-r from-ucl-blue/20 via-ucl-blue/30 to-ucl-blue/20 border border-ucl-blue/40 rounded-2xl p-6 text-center">
+          <div className="text-sm text-ucl-blue uppercase tracking-widest font-semibold mb-1">CAMPEÓN</div>
+          <div className="text-white font-black text-3xl uppercase">{champion.name}</div>
+          {champion.fifa_team && <div className="text-ucl-silver text-sm mt-1">{champion.fifa_team}</div>}
         </div>
       )}
 
@@ -194,7 +193,7 @@ export default function BracketPage() {
               <div key={roundNum} className="flex flex-col">
                 {/* Round label */}
                 <div className="text-center mb-4">
-                  <span className="text-xs font-bold text-[#d4af37] uppercase tracking-widest">
+                  <span className="text-xs font-bold text-ucl-blue uppercase tracking-widest">
                     {stageLabel(stageName)}
                   </span>
                 </div>
