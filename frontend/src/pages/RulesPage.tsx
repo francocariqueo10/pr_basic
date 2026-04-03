@@ -3,15 +3,16 @@ export default function RulesPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <span className="text-5xl font-black text-ucl-blue">≡</span>
-        <h1 className="text-3xl font-black uppercase tracking-wide">Reglamento del Torneo</h1>
-        <p className="text-ucl-silver text-sm">Lee con atención antes de comenzar</p>
+        <div className="text-5xl">📋</div>
+        <h1 className="text-3xl font-black">Reglamento del Torneo</h1>
+        <p className="text-gray-400 text-sm">Lee con atención antes de comenzar</p>
       </div>
 
       {/* Regla principal */}
-      <div className="bg-ucl-navy border border-ucl-blue/30 rounded-2xl p-6 space-y-4">
+      <div className="bg-[#0d1526] border border-[#d4af37]/40 rounded-2xl p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-black text-ucl-blue uppercase tracking-wide">Condiciones del Torneo</h2>
+          <span className="text-2xl">⚙️</span>
+          <h2 className="text-xl font-black text-[#d4af37]">Condiciones del Torneo</h2>
         </div>
         <h3 className="font-bold text-lg">Regla Principal: Un Equipo Hasta la Final</h3>
         <ul className="space-y-3">
@@ -22,7 +23,7 @@ export default function RulesPage() {
             { icon: '🚫', text: 'Está prohibido cambiar de equipo entre partidos de la fase regular.' },
             { icon: '⚠️', text: 'Si cambias de equipo fuera de la final, pierdes 3 puntos adicionales (penalización).' },
           ].map(({ icon, text }) => (
-            <li key={text} className="flex items-start gap-3 text-sm text-ucl-silver-l leading-relaxed">
+            <li key={text} className="flex items-start gap-3 text-sm text-gray-300 leading-relaxed">
               <span className="flex-shrink-0 mt-0.5">{icon}</span>
               <span>{text}</span>
             </li>
@@ -31,47 +32,48 @@ export default function RulesPage() {
       </div>
 
       {/* Sistema de puntos */}
-      <div className="bg-ucl-navy border border-white/8 rounded-2xl p-6 space-y-4">
+      <div className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-black uppercase tracking-wide">Sistema de Puntos</h2>
+          <span className="text-2xl">📊</span>
+          <h2 className="text-xl font-black">Sistema de Puntos</h2>
         </div>
-        <div className="overflow-hidden rounded-xl border border-white/8">
+        <div className="overflow-hidden rounded-xl border border-[#1e2a4a]">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-white/5 text-ucl-silver text-xs uppercase tracking-wider">
+              <tr className="bg-[#1e2a4a] text-gray-400 text-xs uppercase tracking-wider">
                 <th className="px-4 py-3 text-left">Resultado</th>
                 <th className="px-4 py-3 text-center">Puntos</th>
                 <th className="px-4 py-3 text-left">Descripción</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/8">
-              <tr className="hover:bg-white/5 transition-colors">
+            <tbody className="divide-y divide-[#1e2a4a]">
+              <tr className="hover:bg-[#1e2a4a]/30 transition-colors">
                 <td className="px-4 py-3 font-semibold text-green-400">Victoria</td>
                 <td className="px-4 py-3 text-center font-black text-green-400">+3 pts</td>
-                <td className="px-4 py-3 text-ucl-silver">Ganaste el partido</td>
+                <td className="px-4 py-3 text-gray-400">Ganaste el partido</td>
               </tr>
               <tr className="hover:bg-[#1e2a4a]/30 transition-colors">
                 <td className="px-4 py-3 font-semibold text-yellow-400">Empate</td>
                 <td className="px-4 py-3 text-center font-black text-yellow-400">+1 pt</td>
-                <td className="px-4 py-3 text-ucl-silver">Resultado igualado</td>
+                <td className="px-4 py-3 text-gray-400">Resultado igualado</td>
               </tr>
               <tr className="hover:bg-[#1e2a4a]/30 transition-colors">
                 <td className="px-4 py-3 font-semibold text-gray-400">Derrota</td>
                 <td className="px-4 py-3 text-center font-black text-gray-500">0 pts</td>
-                <td className="px-4 py-3 text-ucl-silver">Perdiste el partido</td>
+                <td className="px-4 py-3 text-gray-400">Perdiste el partido</td>
               </tr>
               <tr className="hover:bg-[#1e2a4a]/30 transition-colors">
                 <td className="px-4 py-3 font-semibold text-red-400">Penalización</td>
                 <td className="px-4 py-3 text-center font-black text-red-400">-3 pts</td>
-                <td className="px-4 py-3 text-ucl-silver">Cambio de equipo no autorizado</td>
+                <td className="px-4 py-3 text-gray-400">Cambio de equipo no autorizado</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         {/* Nota */}
-        <div className="flex items-start gap-3 bg-white/5 rounded-xl px-4 py-3 text-sm text-ucl-silver leading-relaxed">
-          <span className="flex-shrink-0 text-ucl-blue">ℹ</span>
+        <div className="flex items-start gap-3 bg-[#1e2a4a]/40 rounded-xl px-4 py-3 text-sm text-gray-400 leading-relaxed">
+          <span className="flex-shrink-0 text-[#d4af37]">ℹ️</span>
           <span>
             Los puntos se acumulan durante todas las fases. En caso de penalización por cambio de equipo
             no autorizado, se restan 3 puntos.

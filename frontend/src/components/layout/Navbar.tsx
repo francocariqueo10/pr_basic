@@ -2,9 +2,9 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useAdminStore } from '../../store/adminStore'
 
 const LINKS = [
-  { to: '/', label: 'Inicio', end: true },
-  { to: '/bracket', label: 'Bracket' },
-  { to: '/rules', label: 'Reglas' },
+  { to: '/', label: '🏠 Inicio', end: true },
+  { to: '/bracket', label: '🏆 Bracket' },
+  { to: '/rules', label: '📋 Reglas' },
 ]
 
 export default function Navbar() {
@@ -13,28 +13,24 @@ export default function Navbar() {
   const isAdminPage = location.pathname.startsWith('/admin')
 
   return (
-    <nav className="bg-ucl-black border-b border-white/8">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-        {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-2.5 group">
-          <span className="text-ucl-blue font-black text-base tracking-widest group-hover:text-ucl-blue-l transition-colors">✦</span>
-          <span className="text-white font-black text-base tracking-[0.12em] uppercase">
-            Torneo <span className="text-ucl-silver font-light">2026</span>
+    <nav className="border-b border-[#1e2a4a] bg-[#06091a]">
+      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-16">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-black text-[#d4af37] tracking-tight">
+            FIFA <span className="text-white">TORNEO</span>
           </span>
-        </NavLink>
-
-        {/* Links */}
-        <div className="flex items-center gap-1">
+        </div>
+        <div className="flex gap-1 items-center">
           {LINKS.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
-              className={({ isActive }: { isActive: boolean }) =>
-                `px-4 py-2 rounded-lg text-sm font-semibold transition-all tracking-wide ${
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-ucl-blue text-white'
-                    : 'text-ucl-silver hover:text-white hover:bg-white/5'
+                    ? 'bg-[#d4af37] text-[#06091a]'
+                    : 'text-gray-300 hover:text-white hover:bg-[#1e2a4a]'
                 }`
               }
             >
@@ -43,13 +39,13 @@ export default function Navbar() {
           ))}
           <NavLink
             to={isAdmin ? '/admin' : '/admin/login'}
-            className={`ml-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all tracking-wide ${
+            className={`ml-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               isAdminPage
-                ? 'bg-white/10 text-white border border-white/20'
-                : 'text-ucl-silver/50 hover:text-ucl-silver hover:bg-white/5'
+                ? 'bg-purple-700 text-white'
+                : 'text-gray-500 hover:text-white hover:bg-[#1e2a4a]'
             }`}
           >
-            {isAdmin ? 'Admin' : '···'}
+            {isAdmin ? '⚙️ Admin' : '🔒'}
           </NavLink>
         </div>
       </div>
