@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-ucl-black text-white font-sans antialiased;
+    @apply bg-fifa-dark text-white font-sans antialiased;
   }
 
   ::-webkit-scrollbar {
@@ -12,70 +12,34 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-ucl-navy;
+    @apply bg-fifa-navy;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-ucl-blue rounded-full;
+    @apply bg-fifa-gold rounded-full;
   }
 }
 
 @layer components {
-  /* Cards */
-  .ucl-card {
-    @apply bg-ucl-navy border border-white/8 rounded-xl overflow-hidden;
-  }
-
-  /* Primary button: solid white */
-  .ucl-btn-primary {
-    @apply bg-white text-ucl-black font-bold px-6 py-2.5 rounded-lg hover:bg-ucl-silver-l transition-all tracking-wide;
-  }
-
-  /* Secondary button: white outline */
-  .ucl-btn-secondary {
-    @apply border border-white/30 text-white font-semibold px-5 py-2 rounded-lg hover:bg-white hover:text-ucl-black transition-all tracking-wide;
-  }
-
-  /* Blue accent button */
-  .ucl-btn-blue {
-    @apply bg-ucl-blue text-white font-bold px-6 py-2.5 rounded-lg hover:bg-ucl-blue-l transition-all tracking-wide;
-  }
-
-  /* Backwards compat */
   .fifa-card {
-    @apply bg-ucl-navy border border-white/8 rounded-xl overflow-hidden;
+    @apply bg-fifa-navy border border-white/10 rounded-xl overflow-hidden;
   }
+
   .fifa-btn-primary {
-    @apply bg-white text-ucl-black font-bold px-6 py-2.5 rounded-lg hover:bg-ucl-silver-l transition-all;
+    @apply bg-fifa-gold text-fifa-navy font-bold px-6 py-2.5 rounded-lg hover:brightness-110 transition-all;
   }
 
-  /* Live badge */
   .fifa-badge-live {
-    @apply inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full tracking-wide;
-  }
-
-  /* Section label */
-  .ucl-label {
-    @apply text-xs font-bold text-ucl-silver uppercase tracking-[0.2em];
-  }
-
-  /* Divider */
-  .ucl-divider {
-    @apply border-t border-white/8;
-  }
-
-  /* Star decoration */
-  .ucl-stars-bg {
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(27,68,200,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(27,68,200,0.10) 0%, transparent 50%);
+    @apply inline-flex items-center gap-1.5 bg-fifa-red text-white text-xs font-bold px-2.5 py-1 rounded-full;
   }
 
   .qualified-row {
     @apply border-l-4 border-green-400;
   }
+
   .potential-row {
     @apply border-l-4 border-yellow-400;
   }
+
   .eliminated-row {
     @apply border-l-4 border-red-500;
   }
