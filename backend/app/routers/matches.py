@@ -149,7 +149,7 @@ def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_d
 
         # Advance winner to next round (leg-2 only)
         if match.status == 'completed' and match.winner_id:
-            _advance_winner(match, db)
+            _advance_winner(db, match)
 
         db.commit()
         db.refresh(match)
