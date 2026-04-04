@@ -129,33 +129,41 @@ def _compute_winner(match: Match, db: Session):
 
 @router.put("/{match_id}")
 def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_db)):
+    import traceback as _tb
     match = db.query(Match).filter(Match.id == match_id).first()
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
 
-    updated_fields = update.model_dump(exclude_unset=True)
-    for field, value in updated_fields.items():
-        setattr(match, field, value)
+    try:
+        updated_fields = update.model_dump(exclude_unset=True)
+        for field, value in updated_fields.items():
+            setattr(match, field, value)
 
-    # Sync leg-2 teams when leg-1 rivals are edited
-    if 'home_team_id' in updated_fields or 'away_team_id' in updated_fields:
-        _sync_leg2_teams(db, match)
+        # Sync leg-2 teams when leg-1 rivals are edited
+        if 'home_team_id' in updated_fields or 'away_team_id' in updated_fields:
+            _sync_leg2_teams(db, match)
 
-    # Compute winner when scoring
-    if match.status == 'completed' and match.home_score is not None and match.away_score is not None:
-        _compute_winner(match, db)
+        # Compute winner when scoring
+        if match.status == 'completed' and match.home_score is not None and match.away_score is not None:
+            _compute_winner(match, db)
 
-    # Advance winner to next round (leg-2 only)
-    if match.status == 'completed' and match.winner_id:
-        _advance_winner(match, db)
+        # Advance winner to next round (leg-2 only)
+        if match.status == 'completed' and match.winner_id:
+            _advance_winner(match, db)
 
-    db.commit()
-    db.refresh(match)
+        db.commit()
+        db.refresh(match)
 
-    if match.stage == "group" and match.group_id and match.status == "completed":
-        recalculate_group_standings(db, match.group_id)
+        if match.stage == "group" and match.group_id and match.status == "completed":
+            recalculate_group_standings(db, match.group_id)
 
-    return MatchResponse.model_validate(match)
+        return MatchResponse.model_validate(match)
+
+    except HTTPException:
+        raise
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=_tb.format_exc())
 
 
 @router.post("/generate-playoffs")
