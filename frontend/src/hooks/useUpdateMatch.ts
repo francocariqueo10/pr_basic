@@ -4,9 +4,11 @@ import type { Match } from '../types'
 
 interface UpdatePayload {
   id: number
-  home_score: number
-  away_score: number
-  status: 'completed' | 'scheduled'
+  home_score?: number
+  away_score?: number
+  status?: 'completed' | 'scheduled'
+  home_team_id?: number
+  away_team_id?: number
 }
 
 export function useUpdateMatch() {

@@ -29,6 +29,7 @@ class Match(Base):
     # Knockout bracket fields
     bracket_round = Column(Integer, nullable=True)
     bracket_slot = Column(Integer, nullable=True)
+    leg = Column(Integer, nullable=True, default=1)  # 1=ida, 2=vuelta
     next_match_id = Column(Integer, ForeignKey("matches.id"), nullable=True)
     next_match_home = Column(Boolean, nullable=True)
 

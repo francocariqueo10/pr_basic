@@ -43,6 +43,7 @@ class MatchResponse(MatchBase):
     winner_id: Optional[int] = None
     bracket_round: Optional[int] = None
     bracket_slot: Optional[int] = None
+    leg: Optional[int] = 1
     next_match_id: Optional[int] = None
     next_match_home: Optional[bool] = None
 

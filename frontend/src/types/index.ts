@@ -70,6 +70,7 @@ export interface Match {
   winner_id: number | null
   bracket_round: number | null
   bracket_slot: number | null
+  leg: number | null
   next_match_id: number | null
   next_match_home: boolean | null
 }

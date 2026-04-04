@@ -41,6 +41,9 @@ def startup():
         for col in ["fifa_team", "nickname", "email", "avatar_url"]:
             if col not in team_cols:
                 conn.execute(text(f"ALTER TABLE teams ADD COLUMN {col} VARCHAR"))
+        match_cols = [c["name"] for c in inspector.get_columns("matches")]
+        if "leg" not in match_cols:
+            conn.execute(text("ALTER TABLE matches ADD COLUMN leg INTEGER DEFAULT 1"))
         # Ensure groups table has mode column before updating it
         group_cols = [c["name"] for c in inspector.get_columns("groups")]
         if "mode" not in group_cols:

@@ -41,17 +41,79 @@ def get_match(match_id: int, db: Session = Depends(get_db)):
     return MatchResponse.model_validate(match)
 
 
-@router.put("/{match_id}")
-def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_db)):
-    match = db.query(Match).filter(Match.id == match_id).first()
-    if not match:
-        raise HTTPException(status_code=404, detail="Match not found")
+def _sync_leg2_teams(db: Session, match: Match):
+    """When leg-1 teams are both set, mirror them swapped into leg-2."""
+    if match.leg != 1 or match.bracket_round is None:
+        return
+    if match.home_team_id is None or match.away_team_id is None:
+        return
+    leg2 = db.query(Match).filter(
+        Match.bracket_round == match.bracket_round,
+        Match.bracket_slot == match.bracket_slot,
+        Match.leg == 2,
+    ).first()
+    if leg2 and leg2.status == 'scheduled':
+        leg2.home_team_id = match.away_team_id
+        leg2.away_team_id = match.home_team_id
 
-    for field, value in update.model_dump(exclude_unset=True).items():
-        setattr(match, field, value)
 
-    # Auto-calculate winner_id when scores are set and status is completed
-    if match.status == "completed" and match.home_score is not None and match.away_score is not None:
+def _advance_winner(db: Session, match: Match):
+    """Advance the aggregate winner to the next bracket match (leg-2 only)."""
+    if not (match.leg == 2 and match.winner_id and match.next_match_id):
+        return
+    next_leg1 = db.query(Match).filter(Match.id == match.next_match_id).first()
+    if not next_leg1:
+        return
+    if match.next_match_home:
+        next_leg1.home_team_id = match.winner_id
+    else:
+        next_leg1.away_team_id = match.winner_id
+    _sync_leg2_teams(db, next_leg1)
+
+
+def _compute_winner(match: Match, db: Session):
+    """Set match.winner_id based on leg type."""
+    if match.home_score is None or match.away_score is None:
+        return
+
+    is_two_legged_leg2 = (match.leg == 2 and match.bracket_round is not None)
+
+    if is_two_legged_leg2:
+        # Aggregate: find leg1
+        leg1 = db.query(Match).filter(
+            Match.bracket_round == match.bracket_round,
+            Match.bracket_slot == match.bracket_slot,
+            Match.leg == 1,
+        ).first()
+
+        if leg1 and leg1.status == 'completed' and leg1.home_score is not None:
+            # leg1: team_A (home) vs team_B (away)
+            # leg2: team_B (home) vs team_A (away)
+            team_a = leg1.home_team_id
+            team_b = leg1.away_team_id
+            goals_a = (leg1.home_score or 0) + (match.away_score or 0)
+            goals_b = (leg1.away_score or 0) + (match.home_score or 0)
+
+            if goals_a > goals_b:
+                match.winner_id = team_a
+            elif goals_b > goals_a:
+                match.winner_id = team_b
+            elif match.home_penalties is not None and match.away_penalties is not None:
+                # Penalties decided at leg-2 venue
+                if match.home_penalties > match.away_penalties:
+                    match.winner_id = team_b  # leg2 home = team_B
+                elif match.away_penalties > match.home_penalties:
+                    match.winner_id = team_a  # leg2 away = team_A
+            else:
+                match.winner_id = None  # aggregate draw — need penalties
+        else:
+            # leg1 not yet complete or single-leg fallback
+            if match.home_score > match.away_score:
+                match.winner_id = match.home_team_id
+            elif match.away_score > match.home_score:
+                match.winner_id = match.away_team_id
+    else:
+        # Leg 1 or single-leg: compute individual match winner (display only)
         if match.home_score > match.away_score:
             match.winner_id = match.home_team_id
         elif match.away_score > match.home_score:
@@ -59,19 +121,33 @@ def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_d
         elif match.home_penalties is not None and match.away_penalties is not None:
             if match.home_penalties > match.away_penalties:
                 match.winner_id = match.home_team_id
-            else:
+            elif match.away_penalties > match.home_penalties:
                 match.winner_id = match.away_team_id
         else:
-            match.winner_id = None  # Draw, no winner yet
+            match.winner_id = None
 
-    # Auto-advance winner to next bracket match
-    if match.status == "completed" and match.winner_id and match.next_match_id:
-        next_match = db.query(Match).filter(Match.id == match.next_match_id).first()
-        if next_match:
-            if match.next_match_home:
-                next_match.home_team_id = match.winner_id
-            else:
-                next_match.away_team_id = match.winner_id
+
+@router.put("/{match_id}")
+def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_db)):
+    match = db.query(Match).filter(Match.id == match_id).first()
+    if not match:
+        raise HTTPException(status_code=404, detail="Match not found")
+
+    updated_fields = update.model_dump(exclude_unset=True)
+    for field, value in updated_fields.items():
+        setattr(match, field, value)
+
+    # Sync leg-2 teams when leg-1 rivals are edited
+    if 'home_team_id' in updated_fields or 'away_team_id' in updated_fields:
+        _sync_leg2_teams(db, match)
+
+    # Compute winner when scoring
+    if match.status == 'completed' and match.home_score is not None and match.away_score is not None:
+        _compute_winner(match, db)
+
+    # Advance winner to next round (leg-2 only)
+    if match.status == 'completed' and match.winner_id:
+        _advance_winner(match, db)
 
     db.commit()
     db.refresh(match)
@@ -95,7 +171,6 @@ def generate_playoffs(db: Session = Depends(get_db)):
             detail=f"Faltan {total - completed} partido(s) de grupo por completar"
         )
 
-    # Get standings sorted by position
     standings = (
         db.query(Standing)
         .order_by(Standing.position)
@@ -104,17 +179,17 @@ def generate_playoffs(db: Session = Depends(get_db)):
     if len(standings) < 4:
         raise HTTPException(status_code=400, detail="No hay suficientes participantes")
 
-    ranked = [s.team_id for s in standings]  # position 1,2,3,4,5...
+    ranked = [s.team_id for s in standings]
 
     sf1 = db.query(Match).filter(Match.match_number == 11).first()
     sf2 = db.query(Match).filter(Match.match_number == 12).first()
 
     if sf1:
-        sf1.home_team_id = ranked[0]  # 1st
-        sf1.away_team_id = ranked[3]  # 4th
+        sf1.home_team_id = ranked[0]
+        sf1.away_team_id = ranked[3]
     if sf2:
-        sf2.home_team_id = ranked[1]  # 2nd
-        sf2.away_team_id = ranked[2]  # 3rd
+        sf2.home_team_id = ranked[1]
+        sf2.away_team_id = ranked[2]
 
     db.commit()
     return {"message": "Playoffs generados exitosamente"}
@@ -131,7 +206,6 @@ def generate_final(db: Session = Depends(get_db)):
     if sf1.status != "completed" or sf2.status != "completed":
         raise HTTPException(status_code=400, detail="Las semifinales no han terminado")
 
-    # Determine winners and losers
     def get_winner(m: Match):
         if m.home_score is None or m.away_score is None:
             return None, None
@@ -139,7 +213,7 @@ def generate_final(db: Session = Depends(get_db)):
             return m.home_team_id, m.away_team_id
         elif m.away_score > m.home_score:
             return m.away_team_id, m.home_team_id
-        return m.home_team_id, m.away_team_id  # tiebreak: home advances
+        return m.home_team_id, m.away_team_id
 
     sf1_winner, sf1_loser = get_winner(sf1)
     sf2_winner, sf2_loser = get_winner(sf2)

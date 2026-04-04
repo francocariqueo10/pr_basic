@@ -119,6 +119,82 @@ def clear_team_draw(team_id: int, db: Session = Depends(get_db)):
     return {"message": "Equipo liberado"}
 
 
+@router.post("/assign-fewest-goals/{round_num}")
+def assign_fewest_goals(round_num: int, db: Session = Depends(get_db)):
+    """Auto-assign the fewest-goals winner from round_num-1 to the open slot in round_num."""
+    prev_round = round_num - 1
+
+    # Completed leg-2 matches from previous round
+    prev_leg2s = db.query(Match).filter(
+        Match.bracket_round == prev_round,
+        Match.leg == 2,
+        Match.status == 'completed',
+    ).all()
+
+    if not prev_leg2s:
+        raise HTTPException(status_code=400, detail="No hay partidos completados en la ronda anterior")
+
+    # Compute goals received per winner across both legs
+    goals_received: dict[int, int] = {}
+    for leg2 in prev_leg2s:
+        if not leg2.winner_id:
+            continue
+        leg1 = db.query(Match).filter(
+            Match.bracket_round == leg2.bracket_round,
+            Match.bracket_slot == leg2.bracket_slot,
+            Match.leg == 1,
+        ).first()
+        if not leg1 or leg1.home_score is None or leg2.home_score is None:
+            continue
+
+        winner = leg2.winner_id
+        if leg1.home_team_id == winner:
+            # Team A was home in leg1, away in leg2
+            received = (leg1.away_score or 0) + (leg2.home_score or 0)
+        else:
+            # Team B was away in leg1, home in leg2
+            received = (leg1.home_score or 0) + (leg2.away_score or 0)
+        goals_received[winner] = received
+
+    if not goals_received:
+        raise HTTPException(status_code=400, detail="No se pueden calcular goles recibidos")
+
+    fewest_id = min(goals_received, key=lambda k: goals_received[k])
+
+    # Find open slot in current round (leg1 with home set, away empty)
+    open_match = db.query(Match).filter(
+        Match.bracket_round == round_num,
+        Match.leg == 1,
+        Match.away_team_id == None,
+        Match.home_team_id != None,
+    ).first()
+
+    if not open_match:
+        raise HTTPException(status_code=400, detail="No hay partido abierto en esta ronda")
+
+    open_match.away_team_id = fewest_id
+
+    # Sync leg-2 of that slot
+    leg2 = db.query(Match).filter(
+        Match.bracket_round == open_match.bracket_round,
+        Match.bracket_slot == open_match.bracket_slot,
+        Match.leg == 2,
+    ).first()
+    if leg2 and leg2.status == 'scheduled':
+        leg2.home_team_id = fewest_id
+        leg2.away_team_id = open_match.home_team_id
+
+    db.commit()
+
+    team = db.query(Team).filter(Team.id == fewest_id).first()
+    goals = goals_received[fewest_id]
+    return {
+        "message": f"{team.name} asignado (menos goles recibidos: {goals})",
+        "team_id": fewest_id,
+        "goals_received": goals,
+    }
+
+
 @router.post("/team-pool/reset")
 def reset_team_pool(db: Session = Depends(get_db)):
     for team in db.query(Team).all():
