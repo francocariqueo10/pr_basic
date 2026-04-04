@@ -129,6 +129,16 @@ def _compute_winner(match: Match, db: Session):
 
 @router.put("/{match_id}")
 def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_db)):
+    import traceback as _tb
+    try:
+        return _do_update(match_id, update, db)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=_tb.format_exc())
+
+
+def _do_update(match_id: int, update: MatchUpdate, db: Session):
     match = db.query(Match).filter(Match.id == match_id).first()
     if not match:
         raise HTTPException(status_code=404, detail="Match not found")
@@ -156,6 +166,9 @@ def update_match(match_id: int, update: MatchUpdate, db: Session = Depends(get_d
         recalculate_group_standings(db, match.group_id)
 
     return MatchResponse.model_validate(match)
+
+# Alias so old call sites still work
+update_match.__wrapped__ = _do_update
 
 
 @router.post("/generate-playoffs")
