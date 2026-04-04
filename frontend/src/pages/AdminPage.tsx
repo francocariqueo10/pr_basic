@@ -4,10 +4,12 @@ import { useAdminStore } from '../store/adminStore'
 import PlayersTab from '../components/admin/PlayersTab'
 import MatchesTab from '../components/admin/MatchesTab'
 import TournamentTab from '../components/admin/TournamentTab'
+import TeamDrawTab from '../components/admin/TeamDrawTab'
 
-type Tab = 'players' | 'matches' | 'tournament'
+type Tab = 'draw' | 'players' | 'matches' | 'tournament'
 
 const tabs: { id: Tab; label: string; icon: string }[] = [
+  { id: 'draw',       label: 'Equipos',   icon: '✦' },
   { id: 'players',    label: 'Jugadores', icon: '👥' },
   { id: 'matches',    label: 'Partidos',  icon: '⚽' },
   { id: 'tournament', label: 'Torneo',    icon: '⚙️' },
@@ -16,7 +18,7 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
 export default function AdminPage() {
   const isAuthenticated = useAdminStore(s => s.isAuthenticated)
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<Tab>('players')
+  const [activeTab, setActiveTab] = useState<Tab>('draw')
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/admin/login', { replace: true })
@@ -50,6 +52,7 @@ export default function AdminPage() {
       </div>
 
       {/* Tab content */}
+      {activeTab === 'draw'       && <TeamDrawTab />}
       {activeTab === 'players'    && <PlayersTab />}
       {activeTab === 'matches'    && <MatchesTab />}
       {activeTab === 'tournament' && <TournamentTab />}

@@ -1,6 +1,14 @@
 import client from './client'
 import type { GroupWithStandings, GroupStandings, Match, Team, TopScorer, Goal } from '../types'
 
+export interface TeamPoolPlayer {
+  id: number
+  name: string
+  code: string
+  color: string
+  fifa_team: string | null
+}
+
 export const api = {
   groups: {
     getAll: () => client.get<GroupWithStandings[]>('/groups/').then(r => r.data),
@@ -44,5 +52,9 @@ export const api = {
     resetResults: () => client.post('/admin/reset-results').then(r => r.data),
     generateBracket: () => client.post('/admin/generate-bracket').then(r => r.data),
     drawBracket: (teamIds: number[]) => client.post('/admin/draw-bracket', { team_ids: teamIds }).then(r => r.data),
+    getTeamPool: () => client.get<{ available: string[]; players: TeamPoolPlayer[] }>('/admin/team-pool').then(r => r.data),
+    drawTeam: (teamId: number) => client.post<{ fifa_team: string }>(`/admin/team-pool/draw/${teamId}`).then(r => r.data),
+    clearTeam: (teamId: number) => client.delete(`/admin/team-pool/draw/${teamId}`).then(r => r.data),
+    resetTeamPool: () => client.post('/admin/team-pool/reset').then(r => r.data),
   },
 }
