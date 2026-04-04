@@ -80,6 +80,32 @@ export default function RulesPage() {
           </span>
         </div>
       </div>
+
+      {/* Reglas de la casa */}
+      <div className="bg-[#0d1526] border border-[#1e2a4a] rounded-2xl p-6 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🍺</span>
+          <h2 className="text-xl font-black">Reglas de la Casa</h2>
+        </div>
+        <p className="text-gray-400 text-sm">Estas reglas aplican durante todos los partidos. Sin excepciones.</p>
+        <div className="space-y-2">
+          {[
+            { icon: '⚽', event: 'Gol',              rule: 'Un sorbo de trago.' },
+            { icon: '🟡', event: 'Tarjeta amarilla',  rule: 'El jugador debe tomar medio trago.' },
+            { icon: '🔴', event: 'Tarjeta roja',      rule: 'El jugador debe tomar el trago al seco.' },
+            { icon: '✅', event: 'Penal convertido',  rule: 'El jugador elige a quién regalarle un trago al seco.' },
+            { icon: '❌', event: 'Penal errado',       rule: 'El jugador debe tomar su trago al seco.' },
+          ].map(({ icon, event, rule }) => (
+            <div key={event} className="flex items-start gap-3 bg-[#1e2a4a]/40 border border-[#1e2a4a] rounded-xl px-4 py-3 hover:bg-[#1e2a4a]/60 transition-colors">
+              <span className="flex-shrink-0 text-lg mt-0.5">{icon}</span>
+              <div className="min-w-0">
+                <span className="text-sm font-bold text-white">{event} — </span>
+                <span className="text-sm text-gray-400">{rule}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

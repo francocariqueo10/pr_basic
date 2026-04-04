@@ -41,6 +41,10 @@ def startup():
         for col in ["fifa_team", "nickname", "email", "avatar_url"]:
             if col not in team_cols:
                 conn.execute(text(f"ALTER TABLE teams ADD COLUMN {col} VARCHAR"))
+        # Ensure groups table has mode column before updating it
+        group_cols = [c["name"] for c in inspector.get_columns("groups")]
+        if "mode" not in group_cols:
+            conn.execute(text("ALTER TABLE groups ADD COLUMN mode VARCHAR DEFAULT 'knockout'"))
         # Ensure all groups are in knockout mode
         conn.execute(text("UPDATE groups SET mode = 'knockout' WHERE mode != 'knockout' OR mode IS NULL"))
         conn.commit()
